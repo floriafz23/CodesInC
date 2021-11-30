@@ -1,4 +1,5 @@
 /*
+ * Purpose: Implement AI to play Reversi with user
  * project_reversi_skeleton.h provided by APS105 Teaching Team
  */
 #include <stdio.h>
@@ -214,14 +215,32 @@ int makeMove(const char board[26][26], int n, char turn, int *row, int *col) {
 				availableColumns[position]=c;
 				//creating counter
 				numberTiles = 0;
-				for(int i=-1; i<2; i++){
-					for(int j=-1; j<2; j++){
-						availableMove2 = checkLegalInDirection(newBoard, n, r, c, turn, i, j);
-						if (availableMove2 == true){
-							int k=1;
-							while(board[r+k*i][c+k*j] == oppositeColour){
-								numberTiles++;
-								k++;
+				// favor corners
+				if( (r == 0 || r == n-1) && (c == 0 || c == n-1) ) 
+					numberTiles = 2*n;
+				// if the corner isn't computer tile, disfavor corner-adjacent tiles
+				else if( (r == 0 || r == 1 ) && (c == 0 || c == 1 ) && newBoard[0][0] != turn)
+					numberTiles = 0; 
+				else if( (r == 0 || r == 1 ) && (c == n-1 || c == n-2) && newBoard[0][n-1] != turn)
+					numberTiles = 0; 
+				else if( (r == n-1 || r == n-2) && (c == 0 || c == 1) && newBoard[n-1][0] != turn)
+					numberTiles = 0; 
+				else if( (r == n-1 || r == n-2) && (c == n-1 || c == n-2) && newBoard[n-1][n-1] != turn)
+					numberTiles = 0; 
+				// favor edges tiles
+				else if(r == 0 || c == 0 || r == n-1 || c == n-1)
+					numberTiles = n;
+				//otherwise
+				else{
+					for(int i=-1; i<2; i++){
+						for(int j=-1; j<2; j++){
+							availableMove2 = checkLegalInDirection(newBoard, n, r, c, turn, i, j);
+							if (availableMove2 == true){
+								int k=1;
+								while(board[r+k*i][c+k*j] == oppositeColour){
+									numberTiles++;
+									k++;
+								}
 							}
 						}
 					}
